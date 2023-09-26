@@ -31,11 +31,12 @@ jobs:
           command: npm run test:e2e
           start: npm run start-prod
           wait-on: http://localhost:5000
+        if: ${{ !env.ACT }}   # skipped when run using nektos/act since the default medium image does not contain xvfb which is required by cypress
       - name: Deploy
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' && !env.ACT }}
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
@@ -48,5 +49,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
-          DRY_RUN: false
-        if: ${{ github.event_name == 'push' }}
+          DRY_RUN: true
+        if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip') }}
