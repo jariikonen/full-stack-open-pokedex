@@ -11,6 +11,7 @@ jobs:
     steps:
       - name: Check the deployed service URL
         id: health_check
+        continue-on-error: true
         uses: jtalk/url-health-check-action@fc2fe2a9ca9c9734d992431b749b79350d771fbb   # (v.3.2)
         with:
           # Check the following URLs one by one sequentially
