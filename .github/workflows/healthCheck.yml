@@ -38,6 +38,6 @@ jobs:
         with:
           severity: error
           avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
-          description: Server running at https://lively-morning-6507.fly.dev.
-          text: Health check succeeded.
+          description: Server not responding at https://lively-morning-6507.fly.dev.
+          text: Health check failed.
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
