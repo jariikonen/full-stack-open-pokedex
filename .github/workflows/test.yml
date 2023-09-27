@@ -15,7 +15,7 @@ jobs:
       ACTOR: ${{ github.actor }}
       REPOSITORY: ${{ github.repository }}
       COMMIT_SHA: ${{ github.sha }}
-      COMMIT_URL: ${{ github.repositoryUrl }}/commit/${{ github.sha }}
+      COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
     steps:
       - uses: actions/checkout@v3
       - name: deployment url
@@ -42,12 +42,12 @@ jobs:
         env:
           STEPS: ${{ toJson(steps) }}
           HEAD_STEP: ${{ toJson(steps.head_commit) }}
-        run: echo -e "$STEPS\n\n$HEAD_STEP"
+        run: echo -e "$STEPS\n\n$HEAD_STEP\n\nACTOR - $ACTOR\nREPOSITORY - $REPOSITORY\nDEPLOYMENT_URL - $DEPLOYMENT_URL\nCOMMIT_SHA - $COMMIT_SHA\nCOMMIT_URL - $COMMIT_URL"
       - name: head commit step success
         if: ${{ steps.head_commit.outcome == 'success' }}
         run: echo "Head commit step succeeded!"
       - name: head commit NOT found
         if: ${{ github.event.head_commit.message == null }}
-        run: echo "Head commit message was NOT found! ($ACTOR, $REPOSITORY, $DEPLOYMENT_URL, $COMMIT_SHA, $COMMIT_URL"
+        run: echo "Head commit message was NOT found!"
       - name: event name
         run: echo "${{ github.event_name }}"

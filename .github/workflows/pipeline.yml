@@ -15,7 +15,7 @@ jobs:
       ACTOR: ${{ github.actor }}
       REPOSITORY: ${{ github.repository }}
       COMMIT_SHA: ${{ github.sha }}
-      COMMIT_URL: ${{ github.repositoryUrl }}/commit/${{ github.sha }}
+      COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
     steps:
       - uses: actions/checkout@v3
       - name: deployment url
@@ -52,8 +52,8 @@ jobs:
         with:
           severity: info
           avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
-          description: At $DEPLOYMENT_URL by $ACTOR.
-          text: A new version of $REPOSITORY deployed.
+          description: At ${{ env.DEPLOYMENT_URL }} by ${{ env.ACTOR }}.
+          text: A new version of ${{ env.REPOSITORY }} deployed.
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Notify when build fails
         env:
@@ -63,7 +63,7 @@ jobs:
         with:
           severity: error
           avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
-          description: Commit [$COMMIT_SHA]($COMMIT_URL) by $ACTOR.
+          description: Commit [${{ env.COMMIT_SHA }}](${{ env.COMMIT_URL }}) by ${{ env.ACTOR }}.
           text: $REPOSITORY build failed
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
