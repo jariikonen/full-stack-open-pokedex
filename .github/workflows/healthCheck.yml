@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check the deployed service URL
-        uses: jtalk/url-health-check-action@vfc2fe2a9ca9c9734d992431b749b79350d771fbb   # (v.3.2)
+        uses: jtalk/url-health-check-action@fc2fe2a9ca9c9734d992431b749b79350d771fbb   # (v.3.2)
         with:
           # Check the following URLs one by one sequentially
           url: https://lively-morning-6507.fly.dev
