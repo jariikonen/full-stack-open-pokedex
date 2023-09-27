@@ -1,0 +1,24 @@
+name: Scheduled health check
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  health-check:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@vfc2fe2a9ca9c9734d992431b749b79350d771fbb   # (v.3.2)
+        with:
+          # Check the following URLs one by one sequentially
+          url: https://lively-morning-6507.fly.dev
+          # Follow redirects, or just report success on 3xx status codes
+          follow-redirect: false # Optional, defaults to "false"
+          # Fail this action after this many failed attempts
+          max-attempts: 3 # Optional, defaults to 1
+          # Delay between retries
+          retry-delay: 5s # Optional, only applicable to max-attempts > 1
+          # Retry all errors, including 404. This option might trigger curl upgrade.
+          retry-all: false # Optional, defaults to "false"
