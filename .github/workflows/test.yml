@@ -11,8 +11,16 @@ on:
 jobs:
   a_test_job:
     runs-on: ubuntu-20.04
+    env:
+      ACTOR: ${{ github.actor }}
+      REPOSITORY: ${{ github.repository }}
+      COMMIT_SHA: ${{ github.sha }}
+      COMMIT_URL: ${{ github.repositoryUrl }}/commit/${{ github.sha }}
     steps:
       - uses: actions/checkout@v3
+      - name: deployment url
+        run:
+          echo "DEPLOYMENT_URL=https://$(cat fly.toml | grep '^app = "' | cut -d'"' -f 2).fly.dev" >> $GITHUB_ENV
       - name: github context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -26,6 +34,20 @@ jobs:
           COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
         run: echo "$COMMIT_MESSAGES"
       - name: head commit
+        id: head_commit
         env:
           HEAD_COMMIT_MESSAGE: ${{ toJson(github.event.head_commit.message) }}
         run: echo "$HEAD_COMMIT_MESSAGE"
+      - name: steps
+        env:
+          STEPS: ${{ toJson(steps) }}
+          HEAD_STEP: ${{ toJson(steps.head_commit) }}
+        run: echo -e "$STEPS\n\n$HEAD_STEP"
+      - name: head commit step success
+        if: ${{ steps.head_commit.outcome == 'success' }}
+        run: echo "Head commit step succeeded!"
+      - name: head commit NOT found
+        if: ${{ github.event.head_commit.message == null }}
+        run: echo "Head commit message was NOT found! ($ACTOR, $REPOSITORY, $DEPLOYMENT_URL, $COMMIT_SHA, $COMMIT_URL"
+      - name: event name
+        run: echo "${{ github.event_name }}"
