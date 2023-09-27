@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check the deployed service URL
+        id: health_check
         uses: jtalk/url-health-check-action@fc2fe2a9ca9c9734d992431b749b79350d771fbb   # (v.3.2)
         with:
           # Check the following URLs one by one sequentially
@@ -22,3 +23,21 @@ jobs:
           retry-delay: 5s # Optional, only applicable to max-attempts > 1
           # Retry all errors, including 404. This option might trigger curl upgrade.
           retry-all: false # Optional, defaults to "false"
+      - name: Notify when health check succeeds
+        if: ${{ steps.health_check.outcome == 'success' }}
+        uses: rjstone/discord-webhook-notify@89b0bf43c2c8514f70d0dcba4a706b904e8a3112   # (v1.0.4)
+        with:
+          severity: info
+          avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
+          description: Server running at https://lively-morning-6507.fly.dev.
+          text: Health check succeeded.
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Notify when health check fails
+        if: ${{ steps.health_check.outcome == 'failure' }}
+        uses: rjstone/discord-webhook-notify@89b0bf43c2c8514f70d0dcba4a706b904e8a3112   # (v1.0.4)
+        with:
+          severity: error
+          avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
+          description: Server running at https://lively-morning-6507.fly.dev.
+          text: Health check succeeded.
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
