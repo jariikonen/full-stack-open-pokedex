@@ -55,7 +55,7 @@ jobs:
           description: At ${{ env.DEPLOYMENT_URL }} by ${{ env.ACTOR }}.
           text: A new version of ${{ env.REPOSITORY }} deployed.
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Notify when build fails
+      - name: Notify when a build fails
         env:
           ACTOR: ${{ github.actor }}
         if: ${{ failure() }}
