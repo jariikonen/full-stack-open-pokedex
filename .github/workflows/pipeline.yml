@@ -11,8 +11,16 @@ on:
 jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-20.04
+    env:
+      ACTOR: ${{ github.actor }}
+      REPOSITORY: ${{ github.repository }}
+      COMMIT_SHA: ${{ github.sha }}
+      COMMIT_URL: ${{ github.repositoryUrl }}/commit/${{ github.sha }}
     steps:
       - uses: actions/checkout@v3
+      - name: deployment url
+        run:
+          echo "DEPLOYMENT_URL=https://$(cat fly.toml | grep '^app = "' | cut -d'"' -f 2).fly.dev" >> $GITHUB_ENV
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
@@ -33,10 +41,31 @@ jobs:
           wait-on: http://localhost:5000
         if: ${{ !env.ACT }}   # skipped when run using nektos/act since the default medium image does not contain xvfb which is required by cypress
       - name: Deploy
+        id: deploy
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         if: ${{ github.event_name == 'push' && !env.ACT }}
+      - name: Notify when a new version is deployed
+        if: ${{ steps.deploy.outcome == 'success' }}
+        uses: rjstone/discord-webhook-notify@89b0bf43c2c8514f70d0dcba4a706b904e8a3112   # (v1.0.4)
+        with:
+          severity: info
+          avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
+          description: At $DEPLOYMENT_URL by $ACTOR.
+          text: A new version of $REPOSITORY deployed.
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Notify when build fails
+        env:
+          ACTOR: ${{ github.actor }}
+        if: ${{ failure() }}
+        uses: rjstone/discord-webhook-notify@89b0bf43c2c8514f70d0dcba4a706b904e8a3112   # (v1.0.4)
+        with:
+          severity: error
+          avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
+          description: Commit [$COMMIT_SHA]($COMMIT_URL) by $ACTOR.
+          text: $REPOSITORY build failed
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
