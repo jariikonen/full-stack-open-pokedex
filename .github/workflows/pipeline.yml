@@ -55,7 +55,7 @@ jobs:
           description: At ${{ env.DEPLOYMENT_URL }} by ${{ env.ACTOR }}.
           text: A new version of ${{ env.REPOSITORY }} deployed.
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Notify when build fails
+      - name: Notify when a build fails
         env:
           ACTOR: ${{ github.actor }}
         if: ${{ failure() }}
@@ -64,7 +64,7 @@ jobs:
           severity: error
           avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
           description: Commit [${{ env.COMMIT_SHA }}](${{ env.COMMIT_URL }}) by ${{ env.ACTOR }}.
-          text: $REPOSITORY build failed
+          text: ${{ env.REPOSITORY }} build failed.
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
