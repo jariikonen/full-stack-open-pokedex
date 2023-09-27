@@ -56,8 +56,6 @@ jobs:
           text: A new version of ${{ env.REPOSITORY }} deployed.
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Notify when a build fails
-        env:
-          ACTOR: ${{ github.actor }}
         if: ${{ failure() }}
         uses: rjstone/discord-webhook-notify@89b0bf43c2c8514f70d0dcba4a706b904e8a3112   # (v1.0.4)
         with:
