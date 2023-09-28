@@ -50,4 +50,4 @@ jobs:
         if: ${{ github.event.head_commit.message == null }}
         run: echo "Head commit message was NOT found!"
       - name: event name
-        run: echo "${{ github.event_name }}"
+        run: echo "Triggered by a ${{ github.event_name }} by ${{ github.actor }}."
