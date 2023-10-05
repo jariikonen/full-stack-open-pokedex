@@ -13,3 +13,7 @@ Start by running `npm install` inside the project folder
 `npm run eslint` to run eslint
 `npm run build` to make a production build
 `npm run start-prod` to run your production build
+
+## Link to the other repository
+
+My answers to the exercises 11.20 and 11.21 can be found at https://github.com/jariikonen/full-stack-phonebook.
